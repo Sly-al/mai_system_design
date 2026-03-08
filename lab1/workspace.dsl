@@ -5,7 +5,7 @@ workspace {
     model {
 
         user = Person "Пользователь" "Человек, который ищет отели"
-        admin = Person "Администратор отеля" "Добавление отелей и слотов для бронирования"
+        admin = Person "Администратор отеля" "Человек, который добавляет отели и слоты для бронирования"
 
         paymentSystem = softwareSystem "Платежная система" "Внешняя система обработки платежей"
         moderationSystem = softwareSystem "Единая система отелей" "Внешняя система проверки отелей"
@@ -172,11 +172,9 @@ workspace {
             user -> bookingSystem.apiGateway "Отправить запрос на бронирование номера"
             bookingSystem.apiGateway -> bookingSystem.bookingSvc "Передать запрос бронирования"
 
-            bookingSystem.bookingSvc -> bookingSystem.hotelSvc "Проверить доступность номера и взять временный лок"
+            bookingSystem.bookingSvc -> bookingSystem.hotelSvc "Проверить доступность номера"
             bookingSystem.bookingSvc -> paymentSystem "Провести транзакцию оплаты"
             bookingSystem.bookingSvc -> bookingSystem.bookingDB "Сохранить бронь с результатом оплаты"
-
-            bookingSystem.bookingSvc -> bookingSystem.hotelSvc "Подтвердить бронь номера после успешной оплаты"
 
             bookingSystem.bookingSvc -> bookingSystem.apiGateway "Вернуть результат бронирования"
             bookingSystem.apiGateway -> user "Отправить пользователю подтверждение бронирования"
