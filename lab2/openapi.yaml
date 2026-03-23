@@ -1,0 +1,422 @@
+openapi: 3.0.3
+info:
+  title: Hotel booking API
+  version: "1.0"
+  description: |
+    Система бронирования отелей
+tags:
+  - name: user-service
+  - name: hotel-service
+  - name: booking-service
+paths:
+  /health:
+    get:
+      tags: [user-service, hotel-service, booking-service]
+      summary: Liveness
+      servers:
+        - url: http://127.0.0.1:8081
+          description: user-service
+        - url: http://127.0.0.1:8082
+          description: hotel-service
+        - url: http://127.0.0.1:8083
+          description: booking-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    enum: [user, hotel, booking]
+  /v1/users:
+    post:
+      tags: [user-service]
+      servers:
+        - url: http://127.0.0.1:8081
+      summary: Регистрация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPublic"
+        "409":
+          description: Login already used
+  /v1/auth/login:
+    post:
+      tags: [user-service]
+      servers:
+        - url: http://127.0.0.1:8081
+      summary: Вход, выдача JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  user:
+                    $ref: "#/components/schemas/UserPublic"
+        "401":
+          description: Unauthorized
+  /v1/users/by-login/{login}:
+    get:
+      tags: [user-service]
+      servers:
+        - url: http://127.0.0.1:8081
+      summary: Поиск по логину
+      parameters:
+        - name: login
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPublic"
+        "404":
+          description: User not found
+  /v1/users/search:
+    get:
+      tags: [user-service]
+      servers:
+        - url: http://127.0.0.1:8081
+      summary: Поиск по имени
+      parameters:
+        - name: first_name
+          in: query
+          schema:
+            type: string
+        - name: last_name
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UserPublic"
+        "400":
+          description: Bad request
+  /v1/internal/users/{id}:
+    get:
+      tags: [user-service]
+      servers:
+        - url: http://127.0.0.1:8081
+      summary: Поиск по id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPublic"
+        "404":
+          description: User not found
+  /v1/hotels:
+    get:
+      tags: [hotel-service]
+      servers:
+        - url: http://127.0.0.1:8082
+      summary: Список отелей
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hotels:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Hotel"
+    post:
+      tags: [hotel-service]
+      servers:
+        - url: http://127.0.0.1:8082
+      summary: Создать отель
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HotelCreate"
+      responses:
+        "201":
+          description: Hotel created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hotel"
+        "401":
+          description: Unauthorized
+  /v1/hotels/by-city:
+    get:
+      tags: [hotel-service]
+      servers:
+        - url: http://127.0.0.1:8082
+      summary: Поиск отелей по городу
+      parameters:
+        - name: city
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hotels:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Hotel"
+        "400":
+          description: Bad request
+  /v1/internal/hotels/{id}:
+    get:
+      tags: [hotel-service]
+      servers:
+        - url: http://127.0.0.1:8082
+      summary: Поиск отеля по id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hotel"
+        "404":
+          description: Hotel not found
+  /v1/bookings:
+    post:
+      tags: [booking-service]
+      servers:
+        - url: http://127.0.0.1:8083
+      summary: Создать бронь
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Hotel not found
+        "409":
+          description: Incorrect parameter
+  /v1/users/me/bookings:
+    get:
+      tags: [booking-service]
+      servers:
+        - url: http://127.0.0.1:8083
+      summary: Просмотр броней
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Booking"
+  /v1/bookings/{id}:
+    delete:
+      tags: [booking-service]
+      servers:
+        - url: http://127.0.0.1:8083
+      summary: Отменить бронь
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: ОK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                  status:
+                    type: string
+                    example: cancelled
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserRegister:
+      type: object
+      required: [login, password, first_name, last_name]
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    UserLogin:
+      type: object
+      required: [login, password]
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+    UserPublic:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        login:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    HotelCreate:
+      type: object
+      required: [name, city]
+      properties:
+        name:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+    Hotel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        owner_user_id:
+          type: integer
+          format: int64
+    BookingCreate:
+      type: object
+      required: [hotel_id, check_in, check_out]
+      properties:
+        hotel_id:
+          type: integer
+          format: int64
+        check_in:
+          type: string
+          description: YYYY-MM-DD
+        check_out:
+          type: string
+          description: YYYY-MM-DD
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        hotel_id:
+          type: integer
+          format: int64
+        check_in:
+          type: string
+        check_out:
+          type: string
+        status:
+          type: string
+          example: active

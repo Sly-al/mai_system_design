@@ -1,0 +1,35 @@
+services:
+  user-service:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: user-service
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+  hotel-service:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: hotel-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - user-service
+    restart: unless-stopped
+
+  booking-service:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: booking-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - user-service
+      - hotel-service
+    restart: unless-stopped
