@@ -1,0 +1,45 @@
+components_manager:
+  task_processors:
+    main-task-processor:
+      worker_threads: 4
+    fs-task-processor:
+      worker_threads: 2
+  default_task_processor: main-task-processor
+  components:
+    server:
+      listener:
+        port: 8082
+        task_processor: main-task-processor
+    logging:
+      fs-task-processor: fs-task-processor
+      loggers:
+        default:
+          file_path: '@stderr'
+          level: info
+          overflow_behavior: discard
+    jwt-bearer-middleware:
+      secret: dev-jwt-hmac-secret-do-not-use-in-prod
+    jwt-bearer-pipeline: {}
+    handler-health:
+      path: /health
+      method: GET
+      task_processor: main-task-processor
+    handler-hotel-create:
+      path: /v1/hotels
+      method: POST
+      task_processor: main-task-processor
+      middlewares:
+        pipeline-builder: jwt-bearer-pipeline
+        jwt-bearer-middleware: {}
+    handler-hotel-list:
+      path: /v1/hotels
+      method: GET
+      task_processor: main-task-processor
+    handler-hotel-by-city:
+      path: /v1/hotels/by-city
+      method: GET
+      task_processor: main-task-processor
+    handler-hotel-internal:
+      path: /v1/internal/hotels/{id}
+      method: GET
+      task_processor: main-task-processor
