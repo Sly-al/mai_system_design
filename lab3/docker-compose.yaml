@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: hotel
+      POSTGRES_PASSWORD: hotel
+      POSTGRES_DB: hotel_booking
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotel -d hotel_booking"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  user-service:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  hotel-service:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: hotel-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+    restart: unless-stopped
+
+  booking-service:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: booking-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+      hotel-service:
+        condition: service_started
+    restart: unless-stopped
