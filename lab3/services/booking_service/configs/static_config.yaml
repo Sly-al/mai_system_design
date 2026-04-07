@@ -1,0 +1,58 @@
+components_manager:
+  task_processors:
+    main-task-processor:
+      worker_threads: 4
+    fs-task-processor:
+      worker_threads: 2
+  default_task_processor: main-task-processor
+  components:
+    server:
+      listener:
+        port: 8083
+        task_processor: main-task-processor
+    logging:
+      fs-task-processor: fs-task-processor
+      loggers:
+        default:
+          file_path: '@stderr'
+          level: info
+          overflow_behavior: discard
+    http-client-core: {}
+    http-client: {}
+    dns-client:
+      fs-task-processor: fs-task-processor
+    testsuite-support: {}
+    postgres-db:
+      dbconnection: $postgres_dsn
+      blocking_task_processor: fs-task-processor
+      dns_resolver: async
+    jwt-bearer-middleware:
+      secret: dev-jwt-hmac-secret-do-not-use-in-prod
+    jwt-bearer-pipeline: {}
+    handler-health:
+      path: /health
+      method: GET
+      task_processor: main-task-processor
+    handler-booking-create:
+      path: /v1/bookings
+      method: POST
+      task_processor: main-task-processor
+      user-service-base: http://user-service:8081
+      hotel-service-base: http://hotel-service:8082
+      middlewares:
+        pipeline-builder: jwt-bearer-pipeline
+        jwt-bearer-middleware: {}
+    handler-booking-list:
+      path: /v1/users/me/bookings
+      method: GET
+      task_processor: main-task-processor
+      middlewares:
+        pipeline-builder: jwt-bearer-pipeline
+        jwt-bearer-middleware: {}
+    handler-booking-cancel:
+      path: /v1/bookings/{id}
+      method: DELETE
+      task_processor: main-task-processor
+      middlewares:
+        pipeline-builder: jwt-bearer-pipeline
+        jwt-bearer-middleware: {}
