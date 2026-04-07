@@ -1,4 +1,4 @@
--- Схема БД: вариант 13 — онлайн-бронирование отелей (PostgreSQL)
+-- Схема
 
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
@@ -28,9 +28,6 @@ CREATE TABLE bookings (
     CONSTRAINT bookings_status_ok CHECK (status IN ('active', 'cancelled')),
     CONSTRAINT bookings_dates_ok CHECK (check_in < check_out)
 );
-
--- PK создаёт уникальный индекс автоматически.
--- Индекс на login уже есть через UNIQUE.
 
 CREATE INDEX idx_hotels_owner_user_id ON hotels (owner_user_id);
 CREATE INDEX idx_hotels_city ON hotels (city);
