@@ -39,7 +39,7 @@
 Через докер:
 
 ```bash
-cd lab2
+cd lab3
 docker compose build
 docker compose up -d
 ```
