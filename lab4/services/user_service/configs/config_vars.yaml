@@ -1,0 +1,1 @@
+postgres_dsn: postgresql://hotel:hotel@postgres:5432/hotel_booking
