@@ -48,7 +48,7 @@ db.counters.updateOne(
 );
 ```
 
-## Delete
+## Удаление
 
 ```javascript
 db.hotels.deleteOne({ _id: NumberLong(100) });

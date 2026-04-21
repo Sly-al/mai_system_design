@@ -34,6 +34,5 @@ try {
   });
   print('ERROR');
 } catch (e) {
-  print('Ожидаемо отклонено:');
   print(e.message);
 }
