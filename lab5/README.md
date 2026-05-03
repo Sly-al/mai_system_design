@@ -33,7 +33,7 @@ chmod +x tests/smoke.sh
 ./tests/smoke.sh
 ```
 
-Проверка rate limiting (ожидается 429 после 100 запросов в том же минутном окне):
+Проверка rate limiting:
 
 ```bash
 chmod +x tests/rate_limit.sh
