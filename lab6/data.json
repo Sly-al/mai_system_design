@@ -1,0 +1,22 @@
+{
+  "database": "hotel_booking",
+  "collections": {
+    "hotels": [
+      {"_id": {"$numberLong": "1"}, "owner_user_id": {"$numberLong": "1"}, "name": "Grand Moscow", "city": "Moscow", "address": "Tverskaya 1"},
+      {"_id": {"$numberLong": "2"}, "owner_user_id": {"$numberLong": "2"}, "name": "Nevsky Inn", "city": "Saint Petersburg", "address": "Nevsky 10"},
+      {"_id": {"$numberLong": "3"}, "owner_user_id": {"$numberLong": "3"}, "name": "Ural Lodge", "city": "Ekaterinburg", "address": "Lenina 5"},
+      {"_id": {"$numberLong": "4"}, "owner_user_id": {"$numberLong": "1"}, "name": "Kremlin View", "city": "Moscow", "address": "Varvarka 3"},
+      {"_id": {"$numberLong": "5"}, "owner_user_id": {"$numberLong": "4"}, "name": "Baikal Shore", "city": "Irkutsk", "address": "Gagarin 7"},
+      {"_id": {"$numberLong": "6"}, "owner_user_id": {"$numberLong": "5"}, "name": "Volga Plaza", "city": "Kazan", "address": "Bauman 12"},
+      {"_id": {"$numberLong": "7"}, "owner_user_id": {"$numberLong": "6"}, "name": "Siberian Star", "city": "Novosibirsk", "address": "Krasny 20"},
+      {"_id": {"$numberLong": "8"}, "owner_user_id": {"$numberLong": "7"}, "name": "Golden Ring", "city": "Yaroslavl", "address": "Pervomayskaya 4"},
+      {"_id": {"$numberLong": "9"}, "owner_user_id": {"$numberLong": "8"}, "name": "Black Sea", "city": "Sochi", "address": "Kurortny 9"},
+      {"_id": {"$numberLong": "10"}, "owner_user_id": {"$numberLong": "9"}, "name": "Caspian", "city": "Astrakhan", "address": "Admiralteyskaya 2"},
+      {"_id": {"$numberLong": "11"}, "owner_user_id": {"$numberLong": "10"}, "name": "Pacific", "city": "Vladivostok", "address": "Svetlanskaya 15"},
+      {"_id": {"$numberLong": "12"}, "owner_user_id": {"$numberLong": "11"}, "name": "Arctic", "city": "Murmansk", "address": "Lenina 30"}
+    ],
+    "counters": [
+      {"_id": "hotel_seq", "seq": {"$numberLong": "12"}}
+    ]
+  }
+}
