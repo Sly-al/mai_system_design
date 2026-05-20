@@ -12,11 +12,8 @@
 | **hotel-service** | 8082 | вытсупает в роль consumer |
 | **booking-service** | 8083 | выступает в роли producer |
 
-- **booking-service** публикует `BookingCreated` / `BookingCancelled` в топик `hotel-booking-events`.
-- **hotel-service** потребляет события и дописывает их в JSON-файл `/data/booking_projection.json` (CQRS read-model).
-- Гарантия доставки: **at-most-once** (`enable_idempotence: false`, commit offset до обработки на consumer).
+booking-service публикует события в топик `hotel-booking-events`, а hotel-service потребляет эти события. Гарантия доставки используется при этом at-most-once.
 
-Документация: `event_driven_design.md`, `event_catalog.md`.
 
 ## Запуск
 
