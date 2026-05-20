@@ -1,0 +1,14 @@
+{
+  "kafka_settings": {
+    "kafka-producer": {
+      "brokers": "kafka:29092",
+      "username": "",
+      "password": ""
+    },
+    "kafka-consumer": {
+      "brokers": "kafka:29092",
+      "username": "",
+      "password": ""
+    }
+  }
+}

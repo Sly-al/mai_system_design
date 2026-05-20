@@ -1,0 +1,75 @@
+components_manager:
+  task_processors:
+    main-task-processor:
+      worker_threads: 4
+    fs-task-processor:
+      worker_threads: 2
+    consumer-task-processor:
+      thread_name: consumer
+      worker_threads: 1
+    consumer-blocking-task-processor:
+      thread_name: consumer-blocking
+      worker_threads: 1
+  default_task_processor: main-task-processor
+  components:
+    default-secdist-provider:
+      config: /etc/hotel_booking/secure_data.json
+      missing-ok: true
+      environment-secrets-key: SECDIST_CONFIG
+    kafka-consumer:
+      group_id: hotel-booking-group
+      topics:
+        - hotel-booking-events
+      auto_offset_reset: smallest
+      max_batch_size: 10
+      poll_timeout: 500ms
+      security_protocol: PLAINTEXT
+    booking-events-consumer:
+      projection-file: /data/booking_projection.json
+    server:
+      listener:
+        port: 8082
+        task_processor: main-task-processor
+    logging:
+      fs-task-processor: fs-task-processor
+      loggers:
+        default:
+          file_path: '@stderr'
+          level: info
+          overflow_behavior: discard
+    dns-client:
+      fs-task-processor: fs-task-processor
+    testsuite-support: {}
+    mongo-db:
+      dbconnection: $mongo_uri
+      dns_resolver: async
+    jwt-bearer-middleware:
+      secret: dev-jwt-hmac-secret-do-not-use-in-prod
+    jwt-bearer-pipeline: {}
+    handler-health:
+      path: /health
+      method: GET
+      task_processor: main-task-processor
+    handler-hotel-create:
+      path: /v1/hotels
+      method: POST
+      task_processor: main-task-processor
+      middlewares:
+        pipeline-builder: jwt-bearer-pipeline
+        jwt-bearer-middleware: {}
+    handler-hotel-list:
+      path: /v1/hotels
+      method: GET
+      task_processor: main-task-processor
+    handler-hotel-by-city:
+      path: /v1/hotels/by-city
+      method: GET
+      task_processor: main-task-processor
+    handler-hotel-internal:
+      path: /v1/internal/hotels/{id}
+      method: GET
+      task_processor: main-task-processor
+    handler-hotel-booking-projection:
+      path: /v1/internal/kafka/booking-events
+      method: GET
+      task_processor: main-task-processor
